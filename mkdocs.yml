@@ -1,0 +1,8 @@
+site_name: "airbusspringone"
+site_description: "Conjunto de pruebas automáticas que realizan la validacuión e2e de la funcionalidad del servicio cttione"
+
+nav:
+  - Introduction: index.md
+
+plugins:
+  - techdocs-core

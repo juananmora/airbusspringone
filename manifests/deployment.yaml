@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-accenture
+  namespace: airbus
+  labels:
+    app: demo-accenture
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: demo-accenture
+  template:
+    metadata:
+      labels:
+        app: demo-accenture
+    spec:
+      containers:
+      - name: demo-accenture
+        image: 10.98.141.247:8082/accenture-image:120
+        resources:
+          limits:
+            memory: 1024
+            cpu: 0.5
+        requests:
+          memory: 1024
+          cpu: 0.5
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /accenture
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /accenture
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          successThreshold: 1
+
+      imagePullSecrets:
+        - name: regsecret
