@@ -2,6 +2,8 @@ import requests
 import time
 from requests.auth import HTTPBasicAuth
 import sys
+import argparse
+
 
 def trigger_jenkins_job(urlrepo, entorno, user, token, rama):
     jenkins_url = f"http://mat.qualitat.solucions.gencat.cat/jenkins/job/functional-test-jenkinsfile/buildWithParameters?repositorio={urlrepo}&entorno={entorno}&rama={rama}"
@@ -53,4 +55,14 @@ def trigger_jenkins_job(urlrepo, entorno, user, token, rama):
         else:
             sys.exit(1)
 
-trigger_jenkins_job('http://gitea.gitea/devsecops/functional-test.git', 'preproduccion', 'devsecops', '115c47eb255944379aa5b94eb4c1fe5d57', 'main')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Trigger Jenkins Job")
+    parser.add_argument('urlrepo', type=str, help='URL of the repository')
+    parser.add_argument('entorno', type=str, help='Environment name')
+    parser.add_argument('user', type=str, help='Username for authentication')
+    parser.add_argument('token', type=str, help='Token for authentication')
+    parser.add_argument('rama', type=str, help='Branch name')
+
+    args = parser.parse_args()
+
+    trigger_jenkins_job(args.urlrepo, args.entorno, args.user, args.token, args.rama)
