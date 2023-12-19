@@ -48,7 +48,7 @@ jobs:
           urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins/job/functional-test-jenkinsfile'
           user: 'devsecops'
           password: ${{ secrets.JENKINS_TOKEN }}
-          params: '{"urlrepo":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"preproduccion", "rama":"main"}'
+          params: '{\"urlrepo\":\"http://gitea.gitea/devsecops/functional-test.git\", \"entorno\":\"preproduccion\", \"rama\":\"main\"}'
 
   deploypre:
     needs: jenkins
