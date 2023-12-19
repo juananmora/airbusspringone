@@ -1,34 +1,41 @@
 import requests
 import time
+import argparse
+import logging
 from requests.auth import HTTPBasicAuth
 import sys
-import argparse
 
+logging.basicConfig(level=logging.INFO)
 
 def trigger_jenkins_job(urlrepo, entorno, user, token, rama):
-    jenkins_url = f"http://mat.qualitat.solucions.gencat.cat/jenkins/job/functional-test-jenkinsfile/buildWithParameters?repositorio={urlrepo}&entorno={entorno}&rama={rama}"
-    response = requests.post(jenkins_url, auth=HTTPBasicAuth(user, token))
+
+    base_url = "http://mat.qualitat.solucions.gencat.cat/jenkins/job/functional-test-jenkinsfile"
+    jenkins_url = f"{base_url}/buildWithParameters?repositorio={urlrepo}&entorno={entorno}&rama={rama}"
+    job_url = f"{base_url}/lastBuild/api/json"
+    auth = HTTPBasicAuth(user, token)
+
+    logging.info(f'Iniciando trabajo en: {jenkins_url}')
+    response = requests.post(jenkins_url, auth=auth)
 
     if response.status_code == 201:
-        print("El trabajo de Jenkins se ha iniciado correctamente.")
+        logging.info("El trabajo de Jenkins se ha iniciado correctamente.")
     else:
-        print(f"Error al iniciar el trabajo de Jenkins: {response.status_code}")
+        logging.error(f"Error al iniciar el trabajo de Jenkins: {response.status_code}")
         sys.exit(1)
 
     time.sleep(10)
-    
-    job_url = "http://mat.qualitat.solucions.gencat.cat/jenkins/job/functional-test-jenkinsfile/lastBuild/api/json"
-    response = requests.get(job_url, auth=HTTPBasicAuth(user, token))
+
+    response = requests.get(job_url, auth=auth)
     data = response.json()
     build_number = data.get('id')  # Obtener el número de compilación
     
-    print(f"build number: {build_number}")
+    logging.info(f"build number: {build_number}")
     
     while True:
-        job_url = f"http://mat.qualitat.solucions.gencat.cat/jenkins/job/functional-test-jenkinsfile/{build_number}/api/json"
+        job_url = f"{base_url}/{build_number}/api/json"
         response = requests.get(job_url, auth=HTTPBasicAuth(user, token))
         if response.status_code != 200:
-            print(f"Error al obtener el estado del trabajo: {response.status_code}")
+            logging.info(f"Error al obtener el estado del trabajo: {response.status_code}")
             sys.exit(1)       
         
         status = response.json().get('result')
@@ -37,18 +44,18 @@ def trigger_jenkins_job(urlrepo, entorno, user, token, rama):
             time.sleep(10)
             continue
 
-        print(f"El trabajo de Jenkins ha terminado con el estado: {status}")
+        logging.info(f"El trabajo de Jenkins ha terminado con el estado: {status}")
 
         # Escribir el log completo de Jenkins en un archivo
-        log_url = f"http://mat.qualitat.solucions.gencat.cat/jenkins/job/functional-test-jenkinsfile/{build_number}/consoleText"
+        log_url = f"{base_url}/{build_number}/consoleText"
         response = requests.get(log_url, auth=HTTPBasicAuth(user, token))
         if response.status_code == 200:
-            print(response.text)
+            logging.info(response.text)
             with open(f'jenkins_log_{build_number}.txt', 'w') as f:
                 f.write(response.text)
-            print(f"El log de Jenkins se ha escrito en el archivo 'jenkins_log_{build_number}.txt'.")
+            logging.info(f"El log de Jenkins se ha escrito en el archivo 'jenkins_log_{build_number}.txt'.")
         else:
-            print(f"Error al obtener el log de Jenkins: {response.status_code}")
+            logging.info(f"Error al obtener el log de Jenkins: {response.status_code}")
 
         if status == 'SUCCESS':
             sys.exit(0)
