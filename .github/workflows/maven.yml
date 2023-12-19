@@ -53,6 +53,7 @@ jobs:
       - name: install python packages
         run: |
           pip install --upgrade pip
+          pip install requests
 
       - name: execute py script # run main.py
         run: python jenkins_job2.py
