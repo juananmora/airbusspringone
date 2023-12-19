@@ -56,7 +56,7 @@ jobs:
           pip install requests
 
       - name: execute py script # run main.py
-        run: python jenkins_job2.py
+        run:  python jenkins_job2.py "http://gitea.gitea/devsecops/functional-test.git" "preproduccion" "devsecops" ${{ secrets.JENKINS_TOKEN }} "main"
   deploypre:
     needs: jenkins
     runs-on: ubuntu-latest
