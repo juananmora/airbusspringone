@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: functional test on jenkins
-        uses: juananmora/jenkins_actions@development
+        uses: juananmora/TriggerJenkinsJob@development
         with:
           urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
           user: 'devsecops'
