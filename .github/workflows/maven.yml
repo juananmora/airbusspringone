@@ -14,6 +14,8 @@ on:
   pull_request:
     branches: [ "master" ]
 
+  workflow_dispatch:
+
 jobs:
   build:
 
@@ -32,8 +34,21 @@ jobs:
     - name: Build & Publish Image
       run: echo Build Image   
 
+  scan:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - name: functional test on jenkins
+          uses: juananmora/triggerjenkinsjob@v1
+          with:
+            urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
+            user: 'devsecops'
+            password: ${{ secrets.JENKINS_TOKEN }}
+            job: 'multibranch-sonar/job/springboot/'
+            params: '{"REPO_URL":"http://gitea.gitea/petclinic/petclinic-backend-springboot.git","projectkey":"petclinic-backend-springboot","rama":"master"}'
+  
   deploydev:
-    needs: build
+    needs: scan
     runs-on: ubuntu-latest
     environment: desarrollo
     steps:
