@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: functional test on jenkins
-        uses: juananmora/triggerjenkinsjob@v1
+        uses: juananmora/triggerjenkinsjob@main
         with:
           urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
           user: 'devsecops'
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: functional test on jenkins
-        uses: juananmora/triggerjenkinsjob@v1
+        uses: juananmora/triggerjenkinsjob@main
         with:
           urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
           user: 'devsecops'
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: functional test on jenkins
-        uses: juananmora/triggerjenkinsjob@v1
+        uses: juananmora/triggerjenkinsjob@main
         with:
           urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
           user: 'devsecops'
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: functional test on jenkins
-        uses: juananmora/triggerjenkinsjob@v1
+        uses: juananmora/triggerjenkinsjob@main
         with:
           urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
           user: 'devsecops'
@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: functional test on jenkins
-        uses: juananmora/triggerjenkinsjob@v1
+        uses: juananmora/triggerjenkinsjob@main
         with:
           urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
           user: 'devsecops'
@@ -126,7 +126,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: functional test on jenkins
-        uses: juananmora/triggerjenkinsjob@v1
+        uses: juananmora/triggerjenkinsjob@main
         with:
           urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
           user: 'devsecops'
