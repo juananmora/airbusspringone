@@ -73,9 +73,21 @@ jobs:
           job: 'functional-test-selenium-jenkinsfile'
           params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"preproduccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"50"}'
 
+  performance:
+    needs: deploypre
+    runs-on: ubuntu-latest
+    steps:
+      - name: functional test on jenkins
+        uses: juananmora/triggerjenkinsjob@v1
+        with:
+          urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
+          user: 'devsecops'
+          password: ${{ secrets.JENKINS_TOKEN }}
+          job: 'performance-test-jmeter-pipeline'
+          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git"}'
 
   deploypro:
-    needs: testpre
+    needs: [testpre,performance]
     runs-on: ubuntu-latest
     environment: produccion
     steps:
