@@ -33,13 +33,14 @@ jobs:
       run: echo Build Image   
 
   deploydev:
-    needs: jenkins
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Deploy Development
         run: echo app deployed en dev
 
-  jenkins:
+  testdev:
+    needs: deploydev
     runs-on: ubuntu-latest
     steps:
       - name: functional test on jenkins
@@ -49,20 +50,46 @@ jobs:
           user: 'devsecops'
           password: ${{ secrets.JENKINS_TOKEN }}
           job: 'functional-test-selenium-jenkinsfile'
-          params: '{"urlrepo":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"preproduccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"20"}'
+          params: '{"urlrepo":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"desarrollo", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"60"}'
 
   deploypre:
-    needs: deploydev
+    needs: testdev
     runs-on: ubuntu-latest
     steps:
       - name: Deploy PRE
         run: echo app deployed en PRE
+  testpre:
+    needs: deploypre
+    runs-on: ubuntu-latest
+    steps:
+      - name: functional test on jenkins
+        uses: juananmora/triggerjenkinsjob@v1
+        with:
+          urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
+          user: 'devsecops'
+          password: ${{ secrets.JENKINS_TOKEN }}
+          job: 'functional-test-selenium-jenkinsfile'
+          params: '{"urlrepo":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"preproduccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"50"}'
+
 
   deploypro:
-    needs: deploypre
+    needs: testpre
     runs-on: ubuntu-latest
     steps:
       - name: Deploy PRO
         run: echo app deployed en PRO
+
+  testpro:
+    needs: deploypro
+    runs-on: ubuntu-latest
+    steps:
+      - name: functional test on jenkins
+        uses: juananmora/triggerjenkinsjob@v1
+        with:
+          urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
+          user: 'devsecops'
+          password: ${{ secrets.JENKINS_TOKEN }}
+          job: 'functional-test-selenium-jenkinsfile'
+          params: '{"urlrepo":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"produccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"20"}'
 
 
