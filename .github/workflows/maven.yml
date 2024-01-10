@@ -34,21 +34,9 @@ jobs:
     - name: Build & Publish Image
       run: echo Build Image   
 
-  scan:
-      runs-on: ubuntu-latest
-      needs: build
-      steps:
-        - name: functional test on jenkins
-          uses: juananmora/triggerjenkinsjob@v1
-          with:
-            urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
-            user: 'devsecops'
-            password: ${{ secrets.JENKINS_TOKEN }}
-            job: 'multibranch-sonar/springboot'
-            params: '{"REPO_URL":"http://gitea.gitea/petclinic/petclinic-backend-springboot.git","projectkey":"petclinic-backend-springboot","rama":"master"}'
   
   deploydev:
-    needs: scan
+    needs: build
     runs-on: ubuntu-latest
     environment: desarrollo
     steps:
@@ -67,9 +55,22 @@ jobs:
           password: ${{ secrets.JENKINS_TOKEN }}
           job: 'functional-test-selenium-jenkinsfile'
           params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"desarrollo", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"60"}'
+  apitest:
+    needs: deploydev
+    runs-on: ubuntu-latest
+    steps:
+      - name: functional test on jenkins
+        uses: juananmora/triggerjenkinsjob@v1
+        with:
+          urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
+          user: 'devsecops'
+          password: ${{ secrets.JENKINS_TOKEN }}
+          job: 'backend-test-postman-jenkinsfile'
+          params: '{"REPO_URL":"http://gitea.gitea/devsecops/backend-test-java.git", "APP_NAME":"template"}'
 
+ 
   deploypre:
-    needs: testdev
+    needs: [testdev,apitest]
     runs-on: ubuntu-latest
     environment: preproduccion
     steps:
