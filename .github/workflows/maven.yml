@@ -82,7 +82,7 @@ jobs:
       - name: Deploy PRO
         run: echo app deployed en PRO
 
-  testpro:
+  testregresion:
     needs: deploypro
     runs-on: ubuntu-latest
     steps:
@@ -93,6 +93,6 @@ jobs:
           user: 'devsecops'
           password: ${{ secrets.JENKINS_TOKEN }}
           job: 'functional-test-selenium-jenkinsfile'
-          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"produccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"20"}'
+          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"produccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"regresion", "umbral":"20"}'
 
 
