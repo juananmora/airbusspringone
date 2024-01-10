@@ -35,7 +35,6 @@ jobs:
       run: echo Build Image   
 
   scan:
-      needs: build
       runs-on: ubuntu-latest
       steps:
         - name: functional test on jenkins
@@ -44,7 +43,7 @@ jobs:
             urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
             user: 'devsecops'
             password: ${{ secrets.JENKINS_TOKEN }}
-            job: 'multibranch-sonar/job/springboot/'
+            job: 'multibranch-sonar/job/springboot'
             params: '{"REPO_URL":"http://gitea.gitea/petclinic/petclinic-backend-springboot.git","projectkey":"petclinic-backend-springboot","rama":"master"}'
   
   deploydev:
