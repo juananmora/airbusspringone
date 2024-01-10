@@ -51,7 +51,7 @@ jobs:
           user: 'devsecops'
           password: ${{ secrets.JENKINS_TOKEN }}
           job: 'functional-test-selenium-jenkinsfile'
-          params: '{"urlrepo":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"desarrollo", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"60"}'
+          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"desarrollo", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"60"}'
 
   deploypre:
     needs: testdev
@@ -71,7 +71,7 @@ jobs:
           user: 'devsecops'
           password: ${{ secrets.JENKINS_TOKEN }}
           job: 'functional-test-selenium-jenkinsfile'
-          params: '{"urlrepo":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"preproduccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"50"}'
+          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"preproduccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"50"}'
 
 
   deploypro:
@@ -93,6 +93,6 @@ jobs:
           user: 'devsecops'
           password: ${{ secrets.JENKINS_TOKEN }}
           job: 'functional-test-selenium-jenkinsfile'
-          params: '{"urlrepo":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"produccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"20"}'
+          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"produccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"20"}'
 
 
