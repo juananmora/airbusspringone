@@ -49,7 +49,7 @@ jobs:
           user: 'devsecops'
           password: ${{ secrets.JENKINS_TOKEN }}
           job: 'functional-test-jenkinsfile'
-          params: '{"urlrepo":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"preproduccion", "rama":"main"}'
+          params: '{"urlrepo":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"preproduccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"20"}'
 
   deploypre:
     needs: jenkins
