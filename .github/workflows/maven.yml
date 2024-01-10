@@ -33,7 +33,7 @@ jobs:
       run: echo Build Image   
 
   deploydev:
-    needs: build
+    needs: jenkins
     runs-on: ubuntu-latest
     steps:
       - name: Deploy Development
@@ -48,11 +48,11 @@ jobs:
           urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
           user: 'devsecops'
           password: ${{ secrets.JENKINS_TOKEN }}
-          job: 'functional-test-jenkinsfile'
+          job: 'functional-test-selenium-jenkinsfile'
           params: '{"urlrepo":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"preproduccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"20"}'
 
   deploypre:
-    needs: jenkins
+    needs: deploydev
     runs-on: ubuntu-latest
     steps:
       - name: Deploy PRE
