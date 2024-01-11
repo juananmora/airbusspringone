@@ -13,8 +13,13 @@ on:
     branches: [ "master", "development" ]
   pull_request:
     branches: [ "master" ]
-
   workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'  
 
 jobs:
   build:
