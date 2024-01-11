@@ -9,23 +9,17 @@
 name: Pipeline MAT
 
 on:
-  push:
-    branches: [ "master", "development" ]
-  pull_request:
-    branches: [ "master" ]
   workflow_dispatch:
     inputs:
       logLevel:
         description: 'Log level'     
         default: 'warning'
-      tags:
-        description: 'Test scenario tags'  
+      umbral:
+        description: 'Umbral de pruebas'  
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 11
