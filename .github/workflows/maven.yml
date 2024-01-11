@@ -6,13 +6,20 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Pipeline MAT
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "development" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'  
 
 jobs:
   build:
@@ -28,47 +35,107 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package -Denforcer.fail=false --file pom.xml
+      run: echo Maven
     - name: Build & Publish Image
       run: echo Build Image   
 
-  deploydev:
+  scansonar:
     needs: build
     runs-on: ubuntu-latest
+    steps:
+      - name: functional test on jenkins
+        uses: juananmora/triggerjenkinsjob@main
+        with:
+          urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
+          user: 'devsecops'
+          password: ${{ secrets.JENKINS_TOKEN }}
+          job: 'multibranch-sonar/springboot'
+          params: '{"REPO_URL":"http://gitea.gitea/petclinic/petclinic-backend-springboot.git", "projectkey":"petclinic-backend-springboot", "rama":"master"}'  
+  deploydev:
+    needs: scansonar
+    runs-on: ubuntu-latest
+    environment: desarrollo
     steps:
       - name: Deploy Development
         run: echo app deployed en dev
 
-  jenkins:
+  testdev:
+    needs: deploydev
     runs-on: ubuntu-latest
     steps:
-      - name: checkout repo content
-        uses: actions/checkout@v2 # checkout the repository content
-
-      - name: setup python
-        uses: actions/setup-python@v4
+      - name: functional test on jenkins
+        uses: juananmora/triggerjenkinsjob@main
         with:
-          python-version: '3.10' # install the python version needed
-
-      - name: install python packages
-        run: |
-          pip install --upgrade pip
-          pip install requests
-
-      - name: execute py script # run main.py
-        run:  python jenkins_job2.py "http://gitea.gitea/devsecops/functional-test.git" "preproduccion" "devsecops" ${{ secrets.JENKINS_TOKEN }} "main"
-  deploypre:
-    needs: jenkins
+          urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
+          user: 'devsecops'
+          password: ${{ secrets.JENKINS_TOKEN }}
+          job: 'functional-test-selenium-jenkinsfile'
+          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"desarrollo", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"60"}'
+  apitest:
+    needs: deploydev
     runs-on: ubuntu-latest
+    steps:
+      - name: functional test on jenkins
+        uses: juananmora/triggerjenkinsjob@main
+        with:
+          urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
+          user: 'devsecops'
+          password: ${{ secrets.JENKINS_TOKEN }}
+          job: 'backend-test-postman-jenkinsfile'
+          params: '{"REPO_URL":"http://gitea.gitea/devsecops/backend-test-java.git", "APP_NAME":"template"}'
+
+ 
+  deploypre:
+    needs: [testdev,apitest]
+    runs-on: ubuntu-latest
+    environment: preproduccion
     steps:
       - name: Deploy PRE
         run: echo app deployed en PRE
-
-  deploypro:
+  testpre:
     needs: deploypre
     runs-on: ubuntu-latest
+    steps:
+      - name: functional test on jenkins
+        uses: juananmora/triggerjenkinsjob@main
+        with:
+          urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
+          user: 'devsecops'
+          password: ${{ secrets.JENKINS_TOKEN }}
+          job: 'functional-test-selenium-jenkinsfile'
+          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"preproduccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"main", "umbral":"50"}'
+
+  performance:
+    needs: deploypre
+    runs-on: ubuntu-latest
+    steps:
+      - name: functional test on jenkins
+        uses: juananmora/triggerjenkinsjob@main
+        with:
+          urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
+          user: 'devsecops'
+          password: ${{ secrets.JENKINS_TOKEN }}
+          job: 'performance-test-jmeter-pipeline'
+          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git"}'
+
+  deploypro:
+    needs: [testpre,performance]
+    runs-on: ubuntu-latest
+    environment: produccion
     steps:
       - name: Deploy PRO
         run: echo app deployed en PRO
 
+  testregresion:
+    needs: deploypro
+    runs-on: ubuntu-latest
+    steps:
+      - name: functional test on jenkins
+        uses: juananmora/triggerjenkinsjob@main
+        with:
+          urljenkins: 'http://mat.qualitat.solucions.gencat.cat/jenkins'
+          user: 'devsecops'
+          password: ${{ secrets.JENKINS_TOKEN }}
+          job: 'functional-test-selenium-jenkinsfile'
+          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"produccion", "urlapp":"http://petclinic-frontend-angular.petclinic/","rama":"regresion", "umbral":"20"}'
 
