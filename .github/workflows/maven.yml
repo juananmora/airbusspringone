@@ -14,8 +14,8 @@ on:
       logLevel:
         description: 'Log level'     
         default: 'warning'
-      umbral:
-        description: 'Umbral de pruebas'  
+      umbraldev:
+        description: 'Umbral de pruebas Desarrollo'  
 
 jobs:
   build:
@@ -64,7 +64,7 @@ jobs:
           user: 'devsecops'
           password: ${{ secrets.JENKINS_TOKEN }}
           job: 'functional-test-selenium-jenkinsfile'
-          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"desarrollo", "urlapp":"https://qualitat.solucions.gencat.cat/","rama":"main", "umbral":"60"}'
+          params: '{"repositorio":"http://gitea.gitea/devsecops/functional-test.git", "entorno":"desarrollo", "urlapp":"https://qualitat.solucions.gencat.cat/","rama":"main", "umbral":${{ inputs.umbraldev }}}'
   apitest:
     needs: deploydev
     runs-on: ubuntu-latest
