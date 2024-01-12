@@ -14,8 +14,15 @@ on:
       logLevel:
         description: 'Log level'     
         default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
       umbraldev:
         description: 'Umbral de pruebas Desarrollo'  
+        required: true
+        default: '20'
 
 jobs:
   build:
